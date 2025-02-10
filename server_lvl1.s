@@ -1,4 +1,4 @@
-#write a program that exits
+#write a program that exit
 .intel_syntax noprefix
 .globl _start
 
