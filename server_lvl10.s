@@ -1,4 +1,4 @@
-#Multi-processed program that dynamically responds to multiple HTTP GET requests
+#Multi-processed program that dynamically responds to multiple HTTP POST requests
 .intel_syntax noprefix
 .globl _start
 
@@ -65,32 +65,43 @@ colse3:
 read:
 	mov rdi, 4
 	mov rsi, rsp
-	mov rdx, 1000
+	mov rdx, 500
 	mov rax, 0
 	syscall
 
-mov BYTE PTR [rsp + 20], 0
+mov r10, rax          #save the return of read in r10
+mov BYTE PTR [rsp + 21], 0
 
 open_target_file:
     mov r9, rsp
-    add r9, 4
+    add r9, 5
     mov rdi, r9
-    mov rsi, 0
+    mov rsi, 65
+	mov rdx, 0x1ff
     mov rax, 2
     syscall
 
 mov r9, rax          #save the target filediscreptor in r9
 
-read2:
-	mov rdi, r9
-	mov rsi, rsp
-	mov rdx, 1000
-	mov rax, 0
-	syscall
 
-mov r10, rax         #save the file size
+
+write2:
+    mov rdi, r9          # the opned file fd
+	
+	mov r9, rsp
+	add r9, 183
+
+    mov rsi, r9
+    
+	mov r9, r10
+	sub r9, 183
+
+	mov rdx, r9
+    mov rax, 1
+    syscall
+
 colse2:
-	mov rdi, r9
+	mov rdi, rdi      # the same fd as write syscall
 	mov rax, 3
 	syscall
 
@@ -101,12 +112,6 @@ write1:
 	mov rax, 1
 	syscall
 
-write2:
-    mov rdi, 4
-    mov rsi, rsp
-    mov rdx, r10
-    mov rax, 1
-    syscall
 jmp exit
 
 .section .data
